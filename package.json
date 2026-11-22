@@ -1,0 +1,17 @@
+{
+  "name": "collegepath-platform",
+  "version": "1.0.0",
+  "description": "CollegePath - Intelligent Indian College Discovery and Admission Guidance Platform",
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "client": "npm --prefix client run dev",
+    "server": "npm --prefix server start",
+    "build": "npm --prefix client run build"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  },
+  "dependencies": {
+    "collegepath-platform": "file:"
+  }
+}
