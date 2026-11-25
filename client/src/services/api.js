@@ -1,15 +1,20 @@
 import axios from 'axios';
 import { SAMPLE_COLLEGES, SAMPLE_SCHOLARSHIPS, SAMPLE_ADMISSION_EVENTS } from '../data/mockData';
 
-const API_BASE = '/api';
+// Dynamic API Base URL:
+// In local dev: defaults to '/api' (proxied by Vite to localhost:5000)
+// In production on Vercel: uses VITE_API_URL environment variable pointing to Render
+const rawApiUrl = import.meta.env.VITE_API_URL;
+const API_BASE = rawApiUrl ? `${rawApiUrl.replace(/\/+$/, '')}/api` : '/api';
 
 const api = axios.create({
   baseURL: API_BASE,
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 8000,
+  timeout: 15000,
 });
+
 
 // Intercept to add token
 api.interceptors.request.use((config) => {
