@@ -166,17 +166,24 @@ export const evaluateCollegeMatch = (college, studentProfile) => {
     if (examBorderlineLocal) isExamBorderline = true;
 
     // 4. Budget & Living Evaluation
-    const annualTuition = course.tuitionFeePerYear || 0;
-    const annualHostel = needHostel ? (college.hostelFacilities?.feePerYear || 0) : 0;
+    const annualTuition = Number(course.tuitionFeePerYear) || 0;
+    const hasHostel = Boolean(college.hostelFacilities?.available);
+    const annualHostel = (needHostel && hasHostel) ? (Number(college.hostelFacilities?.feePerYear) || 0) : 0;
     const totalAnnualCost = annualTuition + annualHostel;
 
-    if (totalAnnualCost <= annualBudget) {
-      courseReasons.push(`Budget Friendly: Total annual cost (₹${totalAnnualCost.toLocaleString('en-IN')}) is within your budget of ₹${Number(annualBudget).toLocaleString('en-IN')}.`);
-      courseScore += 10;
-    } else {
-      const difference = totalAnnualCost - annualBudget;
-      courseWarnings.push(`Budget Alert: Annual cost exceeds budget by ₹${difference.toLocaleString('en-IN')} (Institute scholarships available).`);
-      courseScore -= 10;
+    if (annualBudget > 0) {
+      if (totalAnnualCost <= annualBudget) {
+        courseReasons.push(
+          `Budget Friendly: Estimated annual cost is ₹${totalAnnualCost.toLocaleString('en-IN')} (Tuition: ₹${annualTuition.toLocaleString('en-IN')}${annualHostel > 0 ? ` + Hostel: ₹${annualHostel.toLocaleString('en-IN')}` : ''}), within your annual budget of ₹${Number(annualBudget).toLocaleString('en-IN')}.`
+        );
+        courseScore += 10;
+      } else {
+        const difference = totalAnnualCost - annualBudget;
+        courseWarnings.push(
+          `Budget Notice: Estimated annual cost (₹${totalAnnualCost.toLocaleString('en-IN')}) exceeds your budget by ₹${difference.toLocaleString('en-IN')}. Consider applying for state/central scholarship schemes.`
+        );
+        courseScore -= 10;
+      }
     }
 
     // 5. Government vs Private Preference Evaluation
@@ -272,16 +279,25 @@ export const evaluateCollegeMatch = (college, studentProfile) => {
     badgeColor,
     matchScore: finalMatchPercentage,
     matchedCourse: bestCourseMatch ? bestCourseMatch.name : (college.courses[0]?.name || 'All Programs'),
-    tuitionFeePerYear: bestCourseMatch?.tuitionFeePerYear || college.courses[0]?.tuitionFeePerYear || 'Not Available',
-    hostelFeePerYear: college.hostelFacilities?.feePerYear || 0,
-    medianCTC: college.placements?.medianCTC ? `${college.placements.medianCTC} LPA` : 'Not Available',
-    nirfRank: college.accreditation?.nirfRank || 'Not Available',
+    tuitionFeePerYear: bestCourseMatch?.tuitionFeePerYear 
+      ? (typeof bestCourseMatch.tuitionFeePerYear === 'number' ? `₹${bestCourseMatch.tuitionFeePerYear.toLocaleString('en-IN')}` : bestCourseMatch.tuitionFeePerYear)
+      : (college.courses[0]?.tuitionFeePerYear ? `₹${college.courses[0].tuitionFeePerYear.toLocaleString('en-IN')}` : 'Not Available'),
+    hostelFeePerYear: college.hostelFacilities?.available
+      ? (college.hostelFacilities?.feePerYear ? `₹${college.hostelFacilities.feePerYear.toLocaleString('en-IN')}` : 'Available on Request')
+      : 'Hostel Not Available',
+    medianCTC: (college.placements?.medianCTC && Number(college.placements.medianCTC) > 0)
+      ? `${college.placements.medianCTC} LPA`
+      : 'Not Reported / N/A',
+    highestCTC: (college.placements?.highestCTC && Number(college.placements.highestCTC) > 0)
+      ? `${college.placements.highestCTC} LPA`
+      : 'Not Reported / N/A',
+    nirfRank: college.accreditation?.nirfRank ? `#${college.accreditation.nirfRank}` : 'Not Ranked',
     reasons,
     warnings,
     lastVerifiedDate: college.lastVerifiedDate || '2026-11-15',
     admissionYear: '2026-2027',
-    officialWebsite: college.officialLinks?.website,
-    admissionPortal: college.officialLinks?.admissionPortal,
+    officialWebsite: college.officialLinks?.website || null,
+    admissionPortal: college.officialLinks?.admissionPortal || college.officialLinks?.website || null,
     disclaimer: 'DISCLAIMER: Recommendations and admission probabilities are strictly rule-based estimates using previous session counselling cutoff trends. They DO NOT guarantee admission. Official seat allocation is determined solely by authorized counselling bodies (e.g., JoSAA, CSAS, State CETs) based on live verified merit ranks.'
   };
 };

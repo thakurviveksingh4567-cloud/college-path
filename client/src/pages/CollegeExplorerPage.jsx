@@ -47,6 +47,26 @@ export const CollegeExplorerPage = () => {
 
   useEffect(() => {
     fetchColleges();
+    if (filters.search || (filters.stream && filters.stream !== 'All') || (filters.state && filters.state !== 'All States')) {
+      try {
+        const history = JSON.parse(localStorage.getItem('collegepath_recent_searches') || '[]');
+        const title = filters.search
+          ? `Search: "${filters.search}"`
+          : `Colleges in ${filters.state !== 'All States' ? filters.state : ''} ${filters.stream !== 'All' ? `(${filters.stream})` : ''}`.trim();
+        const entry = {
+          id: Date.now().toString(),
+          type: 'explorer',
+          title,
+          query: filters.search || '',
+          state: filters.state || 'All States',
+          stream: filters.stream || 'All',
+          date: 'Just now',
+          link: `/colleges?search=${encodeURIComponent(filters.search || '')}&state=${encodeURIComponent(filters.state || 'All States')}&stream=${encodeURIComponent(filters.stream || 'All')}`
+        };
+        const updated = [entry, ...history.filter(h => h.title !== entry.title)].slice(0, 10);
+        localStorage.setItem('collegepath_recent_searches', JSON.stringify(updated));
+      } catch (e) {}
+    }
   }, [filters]);
 
   const handleReset = () => {

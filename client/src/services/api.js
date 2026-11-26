@@ -158,16 +158,16 @@ export const recommendationAPI = {
           badgeColor,
           matchScore: score,
           matchedCourse: c.courses[0]?.name || 'All Programs',
-          tuitionFeePerYear: c.courses[0]?.tuitionFeePerYear || 'Not Available',
-          hostelFeePerYear: c.hostelFacilities?.feePerYear || 0,
-          medianCTC: c.placements?.medianCTC ? `${c.placements.medianCTC} LPA` : 'Not Available',
-          nirfRank: c.accreditation?.nirfRank || 'Not Available',
+          tuitionFeePerYear: c.courses[0]?.tuitionFeePerYear ? `₹${c.courses[0].tuitionFeePerYear.toLocaleString('en-IN')}` : 'Not Available',
+          hostelFeePerYear: c.hostelFacilities?.available ? `₹${(c.hostelFacilities?.feePerYear || 0).toLocaleString('en-IN')}` : 'Hostel Not Available',
+          medianCTC: (c.placements?.medianCTC && Number(c.placements.medianCTC) > 0) ? `${c.placements.medianCTC} LPA` : 'Not Reported / N/A',
+          nirfRank: c.accreditation?.nirfRank ? `#${c.accreditation.nirfRank}` : 'Not Ranked',
           reasons,
-          warnings: status === 'Not Eligible' ? ['Stream criteria not satisfied.'] : [],
+          warnings: status === 'Not Eligible' ? ['Stream criteria not satisfied for requested degree.'] : [],
           lastVerifiedDate: c.lastVerifiedDate || '2026-11-15',
           admissionYear: '2026-2027',
-          officialWebsite: c.officialLinks?.website,
-          admissionPortal: c.officialLinks?.admissionPortal
+          officialWebsite: c.officialLinks?.website || null,
+          admissionPortal: c.officialLinks?.admissionPortal || c.officialLinks?.website || null
         };
       });
 

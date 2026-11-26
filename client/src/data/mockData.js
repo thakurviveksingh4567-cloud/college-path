@@ -1391,6 +1391,138 @@ export const SAMPLE_SCHOLARSHIPS = [
       status: "Active"
     },
     officialLink: "https://scholarships.gov.in"
+  },
+  {
+    title: "INSPIRE Scholarship for Higher Education (SHE)",
+    slug: "inspire-she-dst-scholarship",
+    provider: "Department of Science and Technology (DST), Govt. of India",
+    type: "Government Central",
+    applicableStreams: ["PCM", "PCB"],
+    amountDetails: {
+      amount: "₹80,000 per year (₹60,000 stipend + ₹20,000 mentorship project)",
+      isPerYear: true
+    },
+    eligibility: {
+      minClass12Percentage: 88,
+      maxFamilyIncomePerYear: 0,
+      gender: "All",
+      summary: "Top 1% students in Class 12 board examinations pursuing B.Sc./B.S./Int. M.Sc. in natural and basic sciences."
+    },
+    applicationPeriod: {
+      deadline: "2026-11-30",
+      status: "Active"
+    },
+    officialLink: "https://online-inspire.gov.in"
+  },
+  {
+    title: "Post-Matric Scholarship Scheme for SC/ST/OBC Candidates",
+    slug: "post-matric-scholarship-social-justice",
+    provider: "Ministry of Social Justice & Empowerment, Govt. of India",
+    type: "Government Central",
+    applicableStreams: ["All"],
+    amountDetails: {
+      amount: "100% Compulsory Tuition Fee Reimbursement + Maintenance Allowance",
+      isPerYear: true
+    },
+    eligibility: {
+      minClass12Percentage: 50,
+      maxFamilyIncomePerYear: 250000,
+      gender: "All",
+      summary: "Class 12 passed SC/ST/OBC students enrolled in recognized post-secondary degree courses with family income under ₹2.5 LPA."
+    },
+    applicationPeriod: {
+      deadline: "2027-01-31",
+      status: "Active"
+    },
+    officialLink: "https://scholarships.gov.in"
+  },
+  {
+    title: "Prime Minister's Special Scholarship Scheme (PMSSS for J&K and Ladakh)",
+    slug: "pmsss-jk-ladakh-aicte",
+    provider: "AICTE & Ministry of Education, Govt. of India",
+    type: "Government Central",
+    applicableStreams: ["PCM", "PCB", "Commerce", "Arts"],
+    amountDetails: {
+      amount: "Up to ₹3,00,000 tuition fee waiver + ₹1,00,000 annual maintenance allowance",
+      isPerYear: true
+    },
+    eligibility: {
+      minClass12Percentage: 60,
+      maxFamilyIncomePerYear: 800000,
+      gender: "All",
+      summary: "Domiciles of Jammu & Kashmir and Ladakh who passed 12th from JKBOSE/CBSE with annual family income below ₹8 Lakhs."
+    },
+    applicationPeriod: {
+      deadline: "2026-12-20",
+      status: "Active"
+    },
+    officialLink: "https://www.aicte-india.org"
+  },
+  {
+    title: "Tata Capital Pankh Scholarship Programme",
+    slug: "tata-capital-pankh-scholarship",
+    provider: "Tata Capital Ltd.",
+    type: "Corporate CSR",
+    applicableStreams: ["All"],
+    amountDetails: {
+      amount: "Up to 80% of tuition fee (₹15,000 to ₹50,000 per year)",
+      isPerYear: true
+    },
+    eligibility: {
+      minClass12Percentage: 60,
+      maxFamilyIncomePerYear: 250000,
+      gender: "All",
+      summary: "Class 12 passed students studying in undergraduate degree courses with family annual income less than or equal to ₹2.5 LPA."
+    },
+    applicationPeriod: {
+      deadline: "2026-11-15",
+      status: "Active"
+    },
+    officialLink: "https://www.tatacapital.com"
+  },
+  {
+    title: "HDFC Bank Parivartan's Badhte Kadam Scholarship",
+    slug: "hdfc-bank-badhte-kadam-scholarship",
+    provider: "HDFC Bank Parivartan",
+    type: "Corporate CSR",
+    applicableStreams: ["All"],
+    amountDetails: {
+      amount: "₹30,000 to ₹1,00,000 per year",
+      isPerYear: true
+    },
+    eligibility: {
+      minClass12Percentage: 60,
+      maxFamilyIncomePerYear: 600000,
+      gender: "All",
+      summary: "Meritorious students from underprivileged backgrounds, single-parent homes, or persons with disabilities pursuing undergrad degrees."
+    },
+    applicationPeriod: {
+      deadline: "2026-10-31",
+      status: "Active"
+    },
+    officialLink: "https://www.hdfcbank.com"
+  },
+  {
+    title: "Kotak Kanya Scholarship for Girl Students",
+    slug: "kotak-kanya-scholarship-girls",
+    provider: "Kotak Education Foundation",
+    type: "Corporate CSR",
+    applicableStreams: ["PCM", "PCB", "Commerce"],
+    amountDetails: {
+      amount: "₹1,50,000 per academic year until degree completion",
+      isPerYear: true
+    },
+    eligibility: {
+      minClass12Percentage: 85,
+      maxFamilyIncomePerYear: 600000,
+      gender: "Female Only",
+      summary: "Meritorious girl students admitted to first-year professional undergraduate degree programs (Engineering, MBBS, Architecture, Design, Integrated LLB)."
+    },
+    applicationPeriod: {
+      deadline: "2026-12-10",
+      status: "Active"
+    },
+    officialLink: "https://kotakeducation.org"
   }
 ];
 

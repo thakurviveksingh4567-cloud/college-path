@@ -15,6 +15,53 @@ export const ComparisonProvider = ({ children }) => {
   });
   const [drawerOpen, setDrawerOpen] = useState(false);
 
+  // Saved comparisons state
+  const [savedComparisons, setSavedComparisons] = useState(() => {
+    try {
+      const stored = localStorage.getItem('collegepath_saved_comparisons');
+      return stored ? JSON.parse(stored) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+
+  const saveCurrentComparison = (customLabel = '') => {
+    if (comparedColleges.length === 0) {
+      showToast('Select at least one college to save a comparison.', 'error');
+      return false;
+    }
+    const label = customLabel.trim() || comparedColleges.map(c => c.shortName || c.name).join(' vs ');
+    const newEntry = {
+      id: Date.now().toString(),
+      label,
+      colleges: [...comparedColleges],
+      savedAt: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+    };
+    const updated = [newEntry, ...savedComparisons.filter(s => s.label !== label)].slice(0, 10);
+    setSavedComparisons(updated);
+    localStorage.setItem('collegepath_saved_comparisons', JSON.stringify(updated));
+    showToast(`Saved comparison: "${label}"`, 'success');
+    return true;
+  };
+
+  const loadSavedComparison = (id) => {
+    const item = savedComparisons.find(s => s.id === id);
+    if (item && item.colleges) {
+      setComparedColleges(item.colleges);
+      localStorage.setItem('collegepath_compare', JSON.stringify(item.colleges));
+      showToast(`Loaded comparison: "${item.label}"`, 'info');
+      return true;
+    }
+    return false;
+  };
+
+  const deleteSavedComparison = (id) => {
+    const updated = savedComparisons.filter(s => s.id !== id);
+    setSavedComparisons(updated);
+    localStorage.setItem('collegepath_saved_comparisons', JSON.stringify(updated));
+    showToast('Saved comparison removed', 'info');
+  };
+
   const isComparing = (slug) => {
     return comparedColleges.some(c => (c.slug || c.collegeId || c._id) === slug);
   };
@@ -64,7 +111,11 @@ export const ComparisonProvider = ({ children }) => {
       clearAll,
       drawerOpen,
       setDrawerOpen,
-      compareCount: comparedColleges.length
+      compareCount: comparedColleges.length,
+      savedComparisons,
+      saveCurrentComparison,
+      loadSavedComparison,
+      deleteSavedComparison
     }}>
       {children}
     </ComparisonContext.Provider>

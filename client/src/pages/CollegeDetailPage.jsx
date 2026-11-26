@@ -131,22 +131,39 @@ export const CollegeDetailPage = () => {
           </div>
 
           {/* College Title & Location overlay */}
-          <div className="absolute bottom-6 left-6 right-6 text-white space-y-1">
-            <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
-              {college.name}
-            </h1>
-            <div className="flex flex-wrap items-center gap-4 text-xs sm:text-sm text-slate-300">
-              <span className="flex items-center gap-1 text-slate-200">
-                <MapPin className="w-4 h-4 text-blue-400" />
-                {college.location?.city}, {college.location?.state}
-              </span>
-              <span>•</span>
-              <span>Est. {college.establishedYear || 'N/A'}</span>
-              <span>•</span>
-              <span>Campus: {college.location?.campusAreaAcres ? `${college.location.campusAreaAcres} Acres` : 'Full Campus'}</span>
-              <span>•</span>
-              <span className="text-emerald-400 font-semibold">Session: 2026-2027</span>
+          <div className="absolute bottom-6 left-6 right-6 text-white flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div className="space-y-1 max-w-3xl">
+              <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
+                {college.name}
+              </h1>
+              <div className="flex flex-wrap items-center gap-4 text-xs sm:text-sm text-slate-300">
+                <span className="flex items-center gap-1 text-slate-200">
+                  <MapPin className="w-4 h-4 text-blue-400" />
+                  {college.location?.city}, {college.location?.state}
+                </span>
+                <span>•</span>
+                <span>Est. {college.establishedYear || 'N/A'}</span>
+                <span>•</span>
+                <span>Campus: {college.location?.campusAreaAcres ? `${college.location.campusAreaAcres} Acres` : 'Full Campus'}</span>
+                <span>•</span>
+                <span className="text-emerald-400 font-semibold">Session: 2026-2027</span>
+              </div>
             </div>
+
+            {/* Quick Hero CTA */}
+            {(college.officialLinks?.admissionPortal || college.officialLinks?.website) && (
+              <div className="shrink-0">
+                <a
+                  href={college.officialLinks?.admissionPortal || college.officialLinks?.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow-lg transition"
+                >
+                  <span>Apply Now</span>
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+              </div>
+            )}
           </div>
         </div>
 
@@ -451,6 +468,25 @@ export const CollegeDetailPage = () => {
                   ))}
                 </div>
               </div>
+
+              {/* Direct Application Box */}
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 p-5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-4">
+                <div>
+                  <h4 className="text-sm font-bold text-navy-900">Ready to Apply for Session 2026-2027?</h4>
+                  <p className="text-xs text-slate-500 mt-0.5">Submit your verified registration directly on the official university portal.</p>
+                </div>
+                {(college.officialLinks?.admissionPortal || college.officialLinks?.website) && (
+                  <a
+                    href={college.officialLinks?.admissionPortal || college.officialLinks?.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="shrink-0 inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-xs transition"
+                  >
+                    <span>Apply Now (Official Portal)</span>
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                )}
+              </div>
             </div>
           )}
 
@@ -462,29 +498,29 @@ export const CollegeDetailPage = () => {
           <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-card space-y-4">
             <h4 className="text-sm font-bold text-navy-900">Direct Actions</h4>
 
+            {/* Apply Now Primary Button */}
+            {(college.officialLinks?.admissionPortal || college.officialLinks?.website) && (
+              <a
+                href={college.officialLinks?.admissionPortal || college.officialLinks?.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full py-3.5 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition group"
+              >
+                <span>Apply Now (Official Portal)</span>
+                <ExternalLink className="w-4 h-4 group-hover:translate-x-0.5 transition" />
+              </a>
+            )}
+
             {/* Official Website Button */}
             {college.officialLinks?.website && (
               <a
                 href={college.officialLinks.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full py-3 px-4 bg-navy-900 hover:bg-navy-800 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 shadow-sm transition"
+                className="w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-navy-900 font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition"
               >
                 <span>Visit Official Website</span>
-                <ExternalLink className="w-4 h-4" />
-              </a>
-            )}
-
-            {/* Application Portal Button */}
-            {college.officialLinks?.admissionPortal && (
-              <a
-                href={college.officialLinks.admissionPortal}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 shadow-md transition"
-              >
-                <span>Apply on Admission Portal</span>
-                <ExternalLink className="w-4 h-4" />
+                <ExternalLink className="w-3.5 h-3.5 text-slate-500" />
               </a>
             )}
 

@@ -77,6 +77,22 @@ export const PredictorPage = () => {
       const res = await recommendationAPI.predictAdmission(payload);
       if (res.success) {
         setResults(res);
+        try {
+          const history = JSON.parse(localStorage.getItem('collegepath_recent_searches') || '[]');
+          const entry = {
+            id: Date.now().toString(),
+            type: 'predictor',
+            title: `Predictor: ${stream} (${class12Percentage}%) • ${preferredCourse || 'All Programs'}`,
+            query: preferredCourse,
+            state: homeState,
+            stream: stream,
+            date: 'Just now',
+            link: '/predictor'
+          };
+          const updated = [entry, ...history.filter(h => h.title !== entry.title)].slice(0, 10);
+          localStorage.setItem('collegepath_recent_searches', JSON.stringify(updated));
+        } catch (e) {}
+
         // Default to best match if available, else all
         if (res.results.bestMatch && res.results.bestMatch.length > 0) {
           setActiveTab('bestMatch');
