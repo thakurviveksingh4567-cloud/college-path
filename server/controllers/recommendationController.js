@@ -29,23 +29,29 @@ export const predictAdmission = async (req, res) => {
     // Sort by match score descending
     evaluations.sort((a, b) => b.matchScore - a.matchScore);
 
-    const eligible = evaluations.filter(e => e.matchStatus === 'Eligible');
+    const bestMatch = evaluations.filter(e => e.matchStatus === 'Best Match');
+    const safeChoice = evaluations.filter(e => e.matchStatus === 'Safe Choice');
     const potential = evaluations.filter(e => e.matchStatus === 'Potential Match');
     const notEligible = evaluations.filter(e => e.matchStatus === 'Not Eligible');
+    const eligible = evaluations.filter(e => e.matchStatus === 'Best Match' || e.matchStatus === 'Safe Choice' || e.matchStatus === 'Eligible');
 
     res.json({
       success: true,
       summary: {
         totalEvaluated: evaluations.length,
-        eligibleCount: eligible.length,
+        bestMatchCount: bestMatch.length,
+        safeChoiceCount: safeChoice.length,
         potentialCount: potential.length,
-        notEligibleCount: notEligible.length
+        notEligibleCount: notEligible.length,
+        eligibleCount: eligible.length,
       },
       results: {
         all: evaluations,
-        eligible,
+        bestMatch,
+        safeChoice,
         potential,
-        notEligible
+        notEligible,
+        eligible
       },
       studentInput: {
         stream: studentProfile.stream,
@@ -54,6 +60,7 @@ export const predictAdmission = async (req, res) => {
         homeState: studentProfile.homeState || 'Not Specified',
         preferredCourse: studentProfile.preferredCourse || 'All Courses',
         annualBudget: studentProfile.annualBudget,
+        collegePreference: studentProfile.collegePreference || 'All',
         jeeMainPercentile: studentProfile.entranceExams?.jeeMain?.percentile || null,
         cuetScore: studentProfile.entranceExams?.cuet?.score || null
       },

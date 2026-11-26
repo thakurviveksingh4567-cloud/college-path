@@ -105,25 +105,40 @@ export const recommendationAPI = {
       // Run quick local prediction if server unreachable
       const marks = profile.class12Percentage || 75;
       const stream = profile.stream || 'PCM';
+      const pref = profile.collegePreference || 'All';
 
       const evaluated = SAMPLE_COLLEGES.map(c => {
         let status = 'Potential Match';
         let badgeColor = 'amber';
         let score = 70;
         const reasons = [];
+        const isGov = ['IIT', 'NIT', 'Central University', 'State Government'].includes(c.collegeType);
 
         if (c.streamsSupported.includes(stream)) {
           reasons.push(`Stream compatible: ${stream} satisfies program requirements.`);
-          if (marks >= 85) {
-            status = 'Eligible';
+          if (marks >= 88) {
+            status = 'Best Match';
             badgeColor = 'green';
-            score = 88;
+            score = 92;
             reasons.push(`Class 12 marks (${marks}%) comfortably clear admission thresholds.`);
+          } else if (marks >= 75) {
+            status = 'Safe Choice';
+            badgeColor = 'teal';
+            score = 78;
+            reasons.push(`Strong academic fit with solid seat allocation probability.`);
           } else {
             status = 'Potential Match';
             badgeColor = 'amber';
-            score = 68;
+            score = 66;
             reasons.push(`Competitive in spot / sliding counselling rounds.`);
+          }
+
+          if (pref === 'Government' && isGov) {
+            score += 5;
+            reasons.push(`Matches Government institution preference.`);
+          } else if (pref === 'Private' && !isGov) {
+            score += 5;
+            reasons.push(`Matches Private/Deemed institution preference.`);
           }
         } else {
           status = 'Not Eligible';
@@ -158,19 +173,29 @@ export const recommendationAPI = {
 
       evaluated.sort((a, b) => b.matchScore - a.matchScore);
 
+      const bestMatch = evaluated.filter(e => e.matchStatus === 'Best Match');
+      const safeChoice = evaluated.filter(e => e.matchStatus === 'Safe Choice');
+      const potential = evaluated.filter(e => e.matchStatus === 'Potential Match');
+      const notEligible = evaluated.filter(e => e.matchStatus === 'Not Eligible');
+      const eligible = evaluated.filter(e => e.matchStatus === 'Best Match' || e.matchStatus === 'Safe Choice' || e.matchStatus === 'Eligible');
+
       return {
         success: true,
         summary: {
           totalEvaluated: evaluated.length,
-          eligibleCount: evaluated.filter(e => e.matchStatus === 'Eligible').length,
-          potentialCount: evaluated.filter(e => e.matchStatus === 'Potential Match').length,
-          notEligibleCount: evaluated.filter(e => e.matchStatus === 'Not Eligible').length
+          bestMatchCount: bestMatch.length,
+          safeChoiceCount: safeChoice.length,
+          potentialCount: potential.length,
+          notEligibleCount: notEligible.length,
+          eligibleCount: eligible.length
         },
         results: {
           all: evaluated,
-          eligible: evaluated.filter(e => e.matchStatus === 'Eligible'),
-          potential: evaluated.filter(e => e.matchStatus === 'Potential Match'),
-          notEligible: evaluated.filter(e => e.matchStatus === 'Not Eligible')
+          bestMatch,
+          safeChoice,
+          potential,
+          notEligible,
+          eligible
         },
         disclaimer: 'DISCLAIMER: Recommendations and admission probabilities are strictly rule-based estimates using previous session counselling cutoff trends. They DO NOT guarantee admission.'
       };

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { recommendationAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import { CollegeCard } from '../components/CollegeCard';
 import { MatchBadge } from '../components/MatchBadge';
 import { INDIAN_STATES, POPULAR_COURSES, STREAMS } from '../data/mockData';
 import { 
@@ -16,7 +15,10 @@ import {
   ShieldCheck, 
   ArrowRight,
   RotateCcw,
-  BookOpen
+  Building2,
+  Landmark,
+  Briefcase,
+  HelpCircle
 } from 'lucide-react';
 
 export const PredictorPage = () => {
@@ -30,6 +32,7 @@ export const PredictorPage = () => {
   const [preferredCourse, setPreferredCourse] = useState(user?.profile?.preferredCourse || 'B.Tech CSE');
   const [annualBudget, setAnnualBudget] = useState(user?.profile?.annualBudget || 300000);
   const [needHostel, setNeedHostel] = useState(user?.profile?.needHostel !== undefined ? user.profile.needHostel : true);
+  const [collegePreference, setCollegePreference] = useState('All'); // 'All', 'Government', 'Private'
 
   // Entrance Exams
   const [jeeTaken, setJeeTaken] = useState(true);
@@ -42,7 +45,7 @@ export const PredictorPage = () => {
   // Results State
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState(null);
-  const [activeTab, setActiveTab] = useState('all');
+  const [activeTab, setActiveTab] = useState('bestMatch');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -56,6 +59,7 @@ export const PredictorPage = () => {
       preferredCourse,
       annualBudget: Number(annualBudget),
       needHostel,
+      collegePreference,
       entranceExams: {
         jeeMain: {
           taken: jeeTaken,
@@ -73,10 +77,18 @@ export const PredictorPage = () => {
       const res = await recommendationAPI.predictAdmission(payload);
       if (res.success) {
         setResults(res);
-        // Scroll to results
+        // Default to best match if available, else all
+        if (res.results.bestMatch && res.results.bestMatch.length > 0) {
+          setActiveTab('bestMatch');
+        } else if (res.results.safeChoice && res.results.safeChoice.length > 0) {
+          setActiveTab('safeChoice');
+        } else {
+          setActiveTab('all');
+        }
+        // Smooth scroll to results
         setTimeout(() => {
           document.getElementById('prediction-results')?.scrollIntoView({ behavior: 'smooth' });
-        }, 100);
+        }, 150);
       }
     } catch (err) {
       console.error(err);
@@ -93,6 +105,7 @@ export const PredictorPage = () => {
     setPreferredCourse('B.Tech CSE');
     setAnnualBudget(300000);
     setNeedHostel(true);
+    setCollegePreference('All');
     setJeeTaken(false);
     setCuetTaken(false);
     setResults(null);
@@ -102,39 +115,40 @@ export const PredictorPage = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
       
       {/* Page Title Banner */}
-      <div className="bg-gradient-to-r from-navy-900 via-navy-800 to-navy-900 text-white rounded-3xl p-6 sm:p-10 shadow-soft text-center sm:text-left flex flex-col md:flex-row items-center justify-between gap-6">
-        <div className="space-y-2 max-w-2xl">
-          <div className="inline-flex items-center gap-2 bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full text-xs font-semibold border border-blue-400/30">
+      <div className="bg-gradient-to-r from-navy-900 via-navy-800 to-navy-900 text-white rounded-3xl p-6 sm:p-10 shadow-soft-xl text-center sm:text-left flex flex-col md:flex-row items-center justify-between gap-6 border border-navy-700/60 relative overflow-hidden">
+        <div className="absolute top-0 right-1/4 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="space-y-3 max-w-2xl relative z-10">
+          <div className="inline-flex items-center gap-2 bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full text-xs font-bold border border-blue-400/30">
             <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-            <span>Rule-Based Indian College Admission Predictor</span>
+            <span>Smart College Finder & Admission Predictor</span>
           </div>
           <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
-            Predict Your College Admission Chances
+            Find Your Match: Best, Safe & Target Colleges
           </h1>
           <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-            Enter your academic profile below. We match your Class 12 percentage, category relaxation rules, domicile quota, and entrance exam percentiles against officially verified college cutoff trends.
+            Enter your academic marks, entrance scores, budget, and college preferences. Our algorithmic engine evaluates official cutoffs and categorizes universities into <strong className="text-emerald-400">Best Matches</strong>, <strong className="text-teal-300">Safe Choices</strong>, and <strong className="text-amber-300">Target Matches</strong>.
           </p>
         </div>
 
-        <div className="bg-navy-800/80 p-4 rounded-2xl border border-navy-700 text-xs space-y-2 shrink-0 max-w-xs text-slate-300">
-          <div className="flex items-center gap-2 text-emerald-400 font-semibold">
+        <div className="bg-navy-800/80 p-5 rounded-2xl border border-navy-700 text-xs space-y-2.5 shrink-0 max-w-xs text-slate-300 relative z-10">
+          <div className="flex items-center gap-2 text-emerald-400 font-bold">
             <ShieldCheck className="w-4 h-4" />
             <span>100% Unbiased Algorithm</span>
           </div>
-          <p className="text-[11px] text-slate-400">
-            No paid promotions. Calculations are based strictly on previous session counselling rounds and seat matrix rules.
+          <p className="text-[11px] text-slate-400 leading-relaxed">
+            No sponsored rankings. Matches are calculated transparently using official JoSAA, CSAS, and NIRF audited cutoff figures for 2026-27.
           </p>
         </div>
       </div>
 
       {/* Main Predictor Form */}
-      <form onSubmit={handleSubmit} className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-card space-y-8">
+      <form onSubmit={handleSubmit} className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-10 shadow-card space-y-8">
         
         {/* Section 1: Academic Stream & Class 12 Marks */}
         <div>
           <h3 className="text-base font-bold text-navy-900 flex items-center gap-2 mb-4">
-            <span className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs">1</span>
-            Class 12 Academic Foundation
+            <span className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">1</span>
+            Class 12 Academic Foundation & Preferences
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -201,7 +215,7 @@ export const PredictorPage = () => {
                   className="w-full accent-blue-600 cursor-pointer h-2 bg-slate-200 rounded-lg"
                 />
                 <p className="text-[11px] text-slate-500 italic">
-                  Note: Top IITs and NITs require 75% in PCM (65% for SC/ST).
+                  IITs and NITs require minimum 75% in PCM (65% for SC/ST).
                 </p>
               </div>
 
@@ -222,12 +236,12 @@ export const PredictorPage = () => {
                   <option value="EWS">GEN-EWS (Economically Weaker Section)</option>
                 </select>
                 <p className="text-[11px] text-slate-400 mt-1">
-                  Applies official cutoff relaxations and quota reservations.
+                  Applies official category cutoffs and seat reservation norms.
                 </p>
               </div>
             </div>
 
-            {/* Target Course & Home State */}
+            {/* Target Course, Home State & College Type Preference */}
             <div className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
@@ -259,9 +273,37 @@ export const PredictorPage = () => {
                     <option key={state} value={state}>{state}</option>
                   ))}
                 </select>
-                <span className="inline-block bg-emerald-50 text-emerald-800 text-[10px] font-semibold px-2 py-0.5 rounded-md mt-1 border border-emerald-200">
-                  Enables 50% Home-State Quota advantage for NITs & State Univs.
-                </span>
+              </div>
+
+              {/* Government vs Private Preference */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  College Ownership Preference
+                </label>
+                <div className="grid grid-cols-3 gap-1.5 bg-slate-100 p-1 rounded-xl">
+                  {[
+                    { id: 'All', label: 'All Types', icon: Landmark },
+                    { id: 'Government', label: 'Government Only', icon: Building2 },
+                    { id: 'Private', label: 'Private / Deemed', icon: GraduationCap }
+                  ].map((p) => {
+                    const Icon = p.icon;
+                    return (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => setCollegePreference(p.id)}
+                        className={`py-2 px-2 rounded-lg text-xs font-bold transition flex flex-col items-center justify-center gap-1 text-center ${
+                          collegePreference === p.id
+                            ? 'bg-white text-blue-600 shadow-xs'
+                            : 'text-slate-600 hover:text-navy-900'
+                        }`}
+                      >
+                        <Icon className="w-3.5 h-3.5" />
+                        <span className="text-[10px] sm:text-xs leading-tight">{p.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
 
@@ -272,11 +314,11 @@ export const PredictorPage = () => {
         <div className="pt-6 border-t border-slate-200">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-base font-bold text-navy-900 flex items-center gap-2">
-              <span className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs">2</span>
+              <span className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">2</span>
               National Entrance Exams (Skip if not taken)
             </h3>
             <span className="text-xs text-slate-500 italic hidden sm:inline">
-              Leave disabled if seeking 12th board merit seats
+              Leave unchecked if applying through Class 12 merit
             </span>
           </div>
 
@@ -293,7 +335,7 @@ export const PredictorPage = () => {
                     id="jeeTaken"
                     checked={jeeTaken}
                     onChange={(e) => setJeeTaken(e.target.checked)}
-                    className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 border-slate-300"
+                    className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 border-slate-300 cursor-pointer"
                   />
                   <label htmlFor="jeeTaken" className="text-sm font-bold text-navy-900 cursor-pointer">
                     JEE Main 2026 / 2027
@@ -320,7 +362,7 @@ export const PredictorPage = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-bold text-slate-600 mb-1">Estimated AIR Rank</label>
+                    <label className="block text-[11px] font-bold text-slate-600 mb-1">Estimated All India Rank</label>
                     <input
                       type="number"
                       min="1"
@@ -334,7 +376,7 @@ export const PredictorPage = () => {
                 </div>
               ) : (
                 <p className="text-xs text-slate-400 italic">
-                  Not taken. CollegePath will match you with state colleges and deemed universities admitting through 12th marks or direct tests.
+                  Not taken. CollegePath will match state universities and deemed institutes admitting via board marks.
                 </p>
               )}
             </div>
@@ -350,7 +392,7 @@ export const PredictorPage = () => {
                     id="cuetTaken"
                     checked={cuetTaken}
                     onChange={(e) => setCuetTaken(e.target.checked)}
-                    className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500 border-slate-300"
+                    className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500 border-slate-300 cursor-pointer"
                   />
                   <label htmlFor="cuetTaken" className="text-sm font-bold text-navy-900 cursor-pointer">
                     CUET UG (Central & State Univs)
@@ -389,18 +431,18 @@ export const PredictorPage = () => {
           </div>
         </div>
 
-        {/* Section 3: Budget & Hostel Preferences */}
+        {/* Section 3: Budget & Living Preferences */}
         <div className="pt-6 border-t border-slate-200">
           <h3 className="text-base font-bold text-navy-900 flex items-center gap-2 mb-4">
-            <span className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs">3</span>
-            Annual Budget & Living Preferences
+            <span className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">3</span>
+            Annual Budget & Accommodation
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-5 rounded-2xl border border-slate-200">
             <div>
               <div className="flex items-center justify-between text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
                 <span>Maximum Annual Budget (Tuition + Living)</span>
-                <span className="text-blue-600 font-bold normal-case text-sm">
+                <span className="text-blue-600 font-extrabold normal-case text-sm">
                   ₹{Number(annualBudget).toLocaleString('en-IN')} / year
                 </span>
               </div>
@@ -452,7 +494,7 @@ export const PredictorPage = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full sm:w-auto px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-sm shadow-md hover:shadow-lg transition flex items-center justify-center gap-2"
+            className="w-full sm:w-auto px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-sm shadow-md hover:shadow-lg transition flex items-center justify-center gap-2 disabled:opacity-50"
           >
             <SlidersHorizontal className="w-4 h-4" />
             <span>{loading ? 'Evaluating Rules & Cutoffs...' : 'Evaluate Admission Eligibility'}</span>
@@ -467,7 +509,7 @@ export const PredictorPage = () => {
         <div id="prediction-results" className="space-y-6 pt-4 animate-fadeIn">
           
           {/* Results Summary Header */}
-          <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-card space-y-6">
+          <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-card space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
               <div>
                 <span className="text-xs font-bold text-blue-600 uppercase tracking-wider">Evaluation Results</span>
@@ -475,34 +517,54 @@ export const PredictorPage = () => {
                   Your College Admission Matches (2026-27 Session)
                 </h2>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Calculated for {results.studentInput.stream} stream candidate with {results.studentInput.class12Percentage}% in Class 12 ({results.studentInput.category} Category, {results.studentInput.homeState} Domicile).
+                  Calculated for {results.studentInput.stream} stream with {results.studentInput.class12Percentage}% in Class 12 ({results.studentInput.category} Category, {results.studentInput.homeState} Domicile).
                 </p>
               </div>
 
               {/* Status Counters */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                  {results.summary.eligibleCount} Eligible
+                  <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                  {results.summary.bestMatchCount || results.results.bestMatch?.length || 0} Best Match
+                </span>
+                <span className="bg-teal-50 text-teal-800 border border-teal-200 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-teal-600" />
+                  {results.summary.safeChoiceCount || results.results.safeChoice?.length || 0} Safe Choice
                 </span>
                 <span className="bg-amber-50 text-amber-800 border border-amber-200 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5">
-                  <AlertCircle className="w-4 h-4 text-amber-600" />
-                  {results.summary.potentialCount} Potential
-                </span>
-                <span className="bg-rose-50 text-rose-800 border border-rose-200 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5">
-                  <XCircle className="w-4 h-4 text-rose-600" />
-                  {results.summary.notEligibleCount} Excluded
+                  <AlertCircle className="w-3.5 h-3.5 text-amber-600" />
+                  {results.summary.potentialCount} Potential / Target
                 </span>
               </div>
             </div>
 
-            {/* Official Non-Guarantee Disclaimer Callout */}
-            <div className="bg-blue-50/70 border border-blue-200 p-4 rounded-2xl flex items-start gap-3 text-xs text-blue-900 leading-relaxed">
-              <Info className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
-              <div>
-                <p className="font-bold text-blue-950">Important Notice & Non-Guarantee Disclaimer:</p>
-                <p className="text-slate-600 mt-0.5">
-                  {results.disclaimer} Seat allotments vary dynamically based on total applicant volume, normalization in JEE/CUET, and subsequent sliding rounds.
+            {/* Match Categories Explanation Box */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <div className="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200">
+                <span className="font-bold text-emerald-900 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                  Best Match
+                </span>
+                <p className="text-[11px] text-emerald-800 mt-1">
+                  Optimal combination of high admission probability, budget fit, and course alignment.
+                </p>
+              </div>
+              <div className="p-3 bg-teal-50/80 rounded-xl border border-teal-200">
+                <span className="font-bold text-teal-900 flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-teal-600" />
+                  Safe Choice
+                </span>
+                <p className="text-[11px] text-teal-800 mt-1">
+                  High security backup: your scores comfortably exceed cutoff thresholds.
+                </p>
+              </div>
+              <div className="p-3 bg-amber-50/80 rounded-xl border border-amber-200">
+                <span className="font-bold text-amber-900 flex items-center gap-1.5">
+                  <AlertCircle className="w-3.5 h-3.5 text-amber-600" />
+                  Potential / Target Match
+                </span>
+                <p className="text-[11px] text-amber-800 mt-1">
+                  Competitive or borderline ranks; high chance in subsequent spot or sliding counselling rounds.
                 </p>
               </div>
             </div>
@@ -510,9 +572,10 @@ export const PredictorPage = () => {
             {/* Match Filter Tabs */}
             <div className="flex border-b border-slate-200 gap-2 overflow-x-auto pb-1">
               {[
-                { id: 'all', label: `All Colleges (${results.summary.totalEvaluated})` },
-                { id: 'eligible', label: `Eligible Only (${results.summary.eligibleCount})` },
-                { id: 'potential', label: `Potential / Borderline (${results.summary.potentialCount})` },
+                { id: 'bestMatch', label: `Best Matches (${results.summary.bestMatchCount || results.results.bestMatch?.length || 0})` },
+                { id: 'safeChoice', label: `Safe Choices (${results.summary.safeChoiceCount || results.results.safeChoice?.length || 0})` },
+                { id: 'potential', label: `Potential / Target (${results.summary.potentialCount})` },
+                { id: 'all', label: `All Evaluated (${results.summary.totalEvaluated})` },
                 { id: 'notEligible', label: `Not Eligible (${results.summary.notEligibleCount})` }
               ].map((tab) => (
                 <button
@@ -531,78 +594,99 @@ export const PredictorPage = () => {
 
             {/* Matches Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-2">
-              {(results.results[activeTab] || []).map((match) => (
-                <div key={match.collegeId} className="flex flex-col">
-                  {/* Detailed Match Reasons Card */}
-                  <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-card hover:shadow-soft transition flex flex-col justify-between h-full space-y-4">
-                    <div>
-                      {/* Top Header */}
-                      <div className="flex items-center justify-between gap-2 mb-2">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                          {match.collegeType} • {match.city}, {match.state}
-                        </span>
-                        <MatchBadge status={match.matchStatus} score={match.matchScore} size="sm" />
-                      </div>
-
-                      <h4 className="text-base font-bold text-navy-900 line-clamp-1">
-                        {match.collegeName}
-                      </h4>
-                      <p className="text-xs font-semibold text-blue-600 mt-0.5">
-                        Matched Course: {match.matchedCourse}
-                      </p>
-
-                      {/* Reasons Box */}
-                      <div className="mt-4 bg-slate-50 p-3 rounded-xl border border-slate-100 space-y-2">
-                        <p className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">
-                          Why You Match:
-                        </p>
-                        {match.reasons && match.reasons.map((r, i) => (
-                          <div key={i} className="flex items-start gap-1.5 text-xs text-slate-700">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                            <span className="leading-snug">{r}</span>
-                          </div>
-                        ))}
-                        {match.warnings && match.warnings.map((w, i) => (
-                          <div key={i} className="flex items-start gap-1.5 text-xs text-amber-700">
-                            <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
-                            <span className="leading-snug">{w}</span>
-                          </div>
-                        ))}
-                      </div>
-
-                      {/* Fee & Placement Details */}
-                      <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-slate-600">
-                        <div>
-                          <span className="text-[10px] text-slate-400 block">Est. Annual Tuition</span>
-                          <span className="font-bold text-navy-900">
-                            {typeof match.tuitionFeePerYear === 'number' 
-                              ? `₹${match.tuitionFeePerYear.toLocaleString('en-IN')}` 
-                              : match.tuitionFeePerYear}
+              {(results.results[activeTab] || []).length === 0 ? (
+                <div className="col-span-full py-12 text-center text-slate-500">
+                  <p className="text-sm font-semibold">No colleges found in this category.</p>
+                  <p className="text-xs text-slate-400 mt-1">Try switching tabs or adjusting your budget/percentage filters above.</p>
+                </div>
+              ) : (
+                (results.results[activeTab] || []).map((match) => (
+                  <div key={match.collegeId} className="flex flex-col">
+                    <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-card hover:shadow-soft-xl hover:-translate-y-1 transition duration-200 flex flex-col justify-between h-full space-y-4">
+                      <div>
+                        {/* Top Header */}
+                        <div className="flex items-center justify-between gap-2 mb-2">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                            {match.collegeType} • {match.city}, {match.state}
                           </span>
+                          <MatchBadge status={match.matchStatus} score={match.matchScore} size="sm" />
                         </div>
-                        <div>
-                          <span className="text-[10px] text-slate-400 block">Median CTC</span>
-                          <span className="font-bold text-emerald-700">{match.medianCTC}</span>
+
+                        <h4 className="text-base font-bold text-navy-900 line-clamp-1">
+                          {match.collegeName}
+                        </h4>
+                        <p className="text-xs font-semibold text-blue-600 mt-0.5">
+                          Matched: {match.matchedCourse}
+                        </p>
+
+                        {/* Reasons Box */}
+                        <div className="mt-4 bg-slate-50 p-3 rounded-xl border border-slate-100 space-y-2">
+                          <p className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">
+                            Match Highlights:
+                          </p>
+                          {match.reasons && match.reasons.map((r, i) => (
+                            <div key={i} className="flex items-start gap-1.5 text-xs text-slate-700">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                              <span className="leading-snug">{r}</span>
+                            </div>
+                          ))}
+                          {match.warnings && match.warnings.map((w, i) => (
+                            <div key={i} className="flex items-start gap-1.5 text-xs text-amber-700">
+                              <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
+                              <span className="leading-snug">{w}</span>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Fee & Placement Details */}
+                        <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-slate-600 bg-slate-50/70 p-2.5 rounded-xl border border-slate-100">
+                          <div>
+                            <span className="text-[10px] text-slate-400 block font-medium uppercase">Est. Annual Tuition</span>
+                            <span className="font-bold text-navy-900 flex items-center">
+                              <IndianRupee className="w-3 h-3 text-slate-400" />
+                              {typeof match.tuitionFeePerYear === 'number' 
+                                ? match.tuitionFeePerYear.toLocaleString('en-IN') 
+                                : match.tuitionFeePerYear}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-[10px] text-slate-400 block font-medium uppercase">Median CTC</span>
+                            <span className="font-bold text-emerald-700 flex items-center gap-1">
+                              <Briefcase className="w-3 h-3 text-emerald-500" />
+                              {match.medianCTC}
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    {/* Bottom Action */}
-                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
-                      <span className="text-[10px] text-slate-400">
-                        Verified {match.lastVerifiedDate}
-                      </span>
-                      <a
-                        href={`/colleges/${match.collegeId}`}
-                        className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1"
-                      >
-                        <span>Full College Specs</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </a>
+                      {/* Bottom Action */}
+                      <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                        <span className="text-[10px] text-slate-400 font-medium">
+                          Verified {match.lastVerifiedDate}
+                        </span>
+                        <a
+                          href={`/colleges/${match.collegeId}`}
+                          className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 hover:underline"
+                        >
+                          <span>Explore Details</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </a>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
+            </div>
+
+            {/* Official Non-Guarantee Disclaimer Callout */}
+            <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl flex items-start gap-3 text-xs text-slate-600 leading-relaxed mt-4">
+              <Info className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
+              <div>
+                <p className="font-bold text-slate-800">Legal Disclaimer & Counselling Process Notice:</p>
+                <p className="text-slate-500 mt-0.5">
+                  {results.disclaimer} All seat allocations are executed strictly through official central and state counselling portals (JoSAA, CSAB, CSAS, JAC).
+                </p>
+              </div>
             </div>
 
           </div>

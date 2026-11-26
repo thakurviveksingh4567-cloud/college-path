@@ -18,8 +18,12 @@ import {
   Sparkles,
   Zap,
   TrendingUp,
-  HelpCircle,
-  FileText
+  Scale,
+  Building2,
+  Users,
+  Compass,
+  Star,
+  BookOpen
 } from 'lucide-react';
 
 export const HomePage = () => {
@@ -63,7 +67,7 @@ export const HomePage = () => {
   const faqs = [
     {
       q: "How does CollegePath predict my admission eligibility?",
-      a: "Our rule-based recommendation engine compares your Class 12 percentage, chosen stream (PCM/PCB/Commerce/Arts), category reservation rules, domicile state, and entrance scores (JEE Main percentile, CUET) against the official previous session cutoffs of each institution. It accounts for category cutoffs (OBC, SC, ST, EWS) and home-state quotas."
+      a: "Our rule-based recommendation engine compares your Class 12 percentage, chosen stream (PCM/PCB/Commerce/Arts), category reservation rules (General/OBC/SC/ST/EWS), domicile state, and entrance scores (JEE Main percentile, CUET) against the official previous session cutoffs of each institution. It categorizes recommendations into Best Matches, Safe Choices, and Potential/Target matches."
     },
     {
       q: "Are the college fee and placement figures verified?",
@@ -71,7 +75,7 @@ export const HomePage = () => {
     },
     {
       q: "Can I use CollegePath if I haven't appeared for JEE Main or CUET?",
-      a: "Absolutely! Many prestigious universities and colleges admit students strictly based on Class 12 board marks or state CETs. You can skip the entrance exam inputs in our Admission Predictor, and the engine will automatically filter colleges that offer merit-based admissions."
+      a: "Absolutely! Many prestigious universities and state institutions admit students strictly based on Class 12 board marks or direct entrance tests. You can leave the entrance exam fields blank in our Smart College Finder, and the engine will automatically filter colleges that offer merit-based admissions."
     },
     {
       q: "Does CollegePath charge any fee or promote private colleges?",
@@ -80,39 +84,69 @@ export const HomePage = () => {
   ];
 
   return (
-    <div className="space-y-16 pb-16">
+    <div className="space-y-16 sm:space-y-24 pb-20">
       
       {/* HERO SECTION */}
-      <section className="relative bg-gradient-to-b from-navy-900 via-navy-800 to-navy-900 text-white pt-12 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        {/* Subtle background glow */}
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl pointer-events-none"></div>
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none"></div>
+      <section className="relative bg-gradient-to-b from-navy-900 via-navy-800 to-navy-900 text-white pt-14 pb-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        {/* Glow ambient effects */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-blue-600/15 rounded-full blur-[120px] pointer-events-none"></div>
+        <div className="absolute top-10 left-10 w-72 h-72 bg-indigo-500/10 rounded-full blur-[90px] pointer-events-none"></div>
+        <div className="absolute bottom-10 right-10 w-80 h-80 bg-teal-500/10 rounded-full blur-[100px] pointer-events-none"></div>
 
-        <div className="max-w-5xl mx-auto relative z-10 text-center space-y-6">
+        <div className="max-w-5xl mx-auto relative z-10 text-center space-y-7">
           
-          {/* Top Pill */}
-          <div className="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-400/30 text-blue-300 px-3.5 py-1.5 rounded-full text-xs font-semibold backdrop-blur-md">
-            <Sparkles className="w-4 h-4 text-amber-400" />
-            <span>AI & Rule-Based Admission Guidance for Class 12 Students</span>
+          {/* Top Badge */}
+          <div className="inline-flex items-center gap-2 bg-blue-500/15 border border-blue-400/30 text-blue-300 px-4 py-1.5 rounded-full text-xs font-bold backdrop-blur-md shadow-xs animate-fadeIn">
+            <Sparkles className="w-4 h-4 text-amber-400 animate-pulse" />
+            <span>Smart College Admission & Cutoff Guidance • 2026-27</span>
           </div>
 
           {/* Main Headline */}
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight">
-            Find Your Best College in India <br className="hidden sm:inline" />
-            <span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">
-              Based on Marks, Stream & Budget
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.18] sm:leading-[1.15]">
+            Find Your Perfect College <br className="hidden sm:inline" />
+            <span className="bg-gradient-to-r from-blue-400 via-indigo-200 to-teal-300 bg-clip-text text-transparent">
+              After Class 12
             </span>
           </h1>
 
+          {/* Subtitle */}
           <p className="text-slate-300 text-sm sm:text-lg max-w-3xl mx-auto font-normal leading-relaxed">
-            Eliminate admission anxiety. Match your Class 12 marks, JEE Main percentile, or CUET score with verified cutoffs, accurate fee breakdowns, and real placement records across top Indian universities.
+            Eliminate admission anxiety. Match your Class 12 marks, JEE Main percentile, CUET score, preferred course, and affordable budget with officially verified cutoff rules and real placement statistics.
           </p>
 
-          {/* Smart Search Form */}
-          <div className="pt-4 max-w-4xl mx-auto">
+          {/* Three Prominent CTA Buttons */}
+          <div className="pt-2 flex flex-wrap items-center justify-center gap-3.5">
+            <Link
+              to="/predictor"
+              className="px-6 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold rounded-xl text-sm shadow-lg shadow-blue-600/25 hover:shadow-xl hover:-translate-y-0.5 transition flex items-center gap-2 group"
+            >
+              <Sparkles className="w-4 h-4 text-amber-300 group-hover:rotate-12 transition-transform" />
+              <span>Find Colleges</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
+
+            <Link
+              to="/colleges"
+              className="px-6 py-3.5 bg-white/95 hover:bg-white text-navy-900 font-bold rounded-xl text-sm shadow-md hover:shadow-lg hover:-translate-y-0.5 transition flex items-center gap-2 group border border-slate-200"
+            >
+              <Compass className="w-4 h-4 text-blue-600 group-hover:rotate-45 transition-transform" />
+              <span>Explore Courses</span>
+            </Link>
+
+            <Link
+              to="/compare"
+              className="px-6 py-3.5 bg-navy-700/80 hover:bg-navy-700 text-slate-200 hover:text-white font-bold rounded-xl text-sm border border-navy-600/80 hover:border-slate-400 transition flex items-center gap-2 group backdrop-blur-md"
+            >
+              <Scale className="w-4 h-4 text-blue-400 group-hover:scale-110 transition-transform" />
+              <span>Compare Colleges</span>
+            </Link>
+          </div>
+
+          {/* Search Form Card */}
+          <div className="pt-6 max-w-4xl mx-auto">
             <form
               onSubmit={handleSearchSubmit}
-              className="bg-white p-3 sm:p-4 rounded-2xl shadow-soft-xl border border-slate-200 text-slate-800 flex flex-col md:flex-row items-center gap-3"
+              className="bg-white p-3 sm:p-4 rounded-2xl shadow-soft-xl border border-slate-200 text-slate-800 flex flex-col md:flex-row items-center gap-3 text-left"
             >
               {/* College Name / Keyword */}
               <div className="flex-1 w-full relative">
@@ -167,17 +201,17 @@ export const HomePage = () => {
             </form>
           </div>
 
-          {/* Stream Shortcuts */}
+          {/* Quick Stream Shortcuts */}
           <div className="pt-2 flex flex-wrap items-center justify-center gap-2 text-xs">
-            <span className="text-slate-400 font-medium">Quick Explore by Stream:</span>
+            <span className="text-slate-400 font-medium">Quick Filters by Stream:</span>
             {STREAMS.map((st) => (
               <Link
                 key={st.id}
                 to={`/colleges?stream=${st.id}`}
-                className="bg-navy-700/70 hover:bg-blue-600 text-slate-200 hover:text-white px-3 py-1.5 rounded-lg border border-navy-600/50 transition font-medium flex items-center gap-1.5"
+                className="bg-navy-700/60 hover:bg-blue-600 text-slate-300 hover:text-white px-3 py-1.5 rounded-lg border border-navy-600/50 transition font-semibold flex items-center gap-1.5"
               >
                 <span>{st.id}</span>
-                <span className="text-[10px] text-slate-400">({st.name.split(' ')[0]})</span>
+                <span className="text-[10px] opacity-75">({st.name.split(' ')[0]})</span>
               </Link>
             ))}
           </div>
@@ -190,11 +224,11 @@ export const HomePage = () => {
             </div>
             <div>
               <p className="text-xl sm:text-2xl font-extrabold text-emerald-400">0%</p>
-              <p className="text-xs text-slate-400 mt-0.5">Hidden Commission</p>
+              <p className="text-xs text-slate-400 mt-0.5">Commercial Bias</p>
             </div>
             <div>
               <p className="text-xl sm:text-2xl font-extrabold text-amber-400">8+ States</p>
-              <p className="text-xs text-slate-400 mt-0.5">Comprehensive Datasets</p>
+              <p className="text-xs text-slate-400 mt-0.5">Central & State Univs</p>
             </div>
             <div>
               <p className="text-xl sm:text-2xl font-extrabold text-purple-400">2026-27</p>
@@ -202,6 +236,37 @@ export const HomePage = () => {
             </div>
           </div>
 
+        </div>
+      </section>
+
+      {/* SMART RECOMMENDATION PREVIEW BANNER */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-gradient-to-r from-blue-700 via-indigo-700 to-navy-900 rounded-3xl p-8 sm:p-12 text-white shadow-soft-xl relative overflow-hidden">
+          <div className="max-w-2xl relative z-10 space-y-4">
+            <span className="bg-white/15 text-blue-200 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider backdrop-blur-md inline-block">
+              Intelligent Admission Engine
+            </span>
+            <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
+              Know Exactly Which Colleges You Qualify For
+            </h2>
+            <p className="text-slate-200 text-sm leading-relaxed">
+              Enter your Class 12 marks, JEE Main percentile, CUET score, category, and budget. Our rule engine categorizes matching colleges into <strong className="text-emerald-300">Best Match</strong>, <strong className="text-teal-200">Safe Choice</strong>, and <strong className="text-amber-300">Target Match</strong> with transparent cutoff explanations.
+            </p>
+            <div className="pt-2 flex flex-wrap items-center gap-3">
+              <Link
+                to="/predictor"
+                className="bg-white hover:bg-slate-100 text-blue-900 font-bold px-6 py-3.5 rounded-xl text-sm shadow-md hover:shadow-lg transition flex items-center gap-2 group"
+              >
+                <SlidersHorizontal className="w-4 h-4 text-blue-600 group-hover:rotate-90 transition-transform" />
+                <span>Launch Smart College Finder</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+              <span className="text-xs text-blue-200 flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                Free • Instant results • No sign-up required
+              </span>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -214,7 +279,7 @@ export const HomePage = () => {
               Explore Popular Courses After Class 12
             </h2>
             <p className="text-sm text-slate-500 mt-1">
-              Direct pathways into engineering, software development, AI & data science, and business management.
+              Direct pathways into software engineering, artificial intelligence, computer applications, and business management.
             </p>
           </div>
           <Link
@@ -229,10 +294,10 @@ export const HomePage = () => {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {[
             { name: "B.Tech CSE", tag: "Most In-Demand", desc: "Computer Science & Engineering", icon: Zap, link: "B.Tech CSE" },
-            { name: "B.Tech AI & ML", tag: "High Growth", desc: "Artificial Intelligence & Robotics", icon: TrendingUp, link: "B.Tech AI & ML" },
+            { name: "B.Tech AI & ML", tag: "High Growth", desc: "Artificial Intelligence & Data Systems", icon: TrendingUp, link: "B.Tech AI & ML" },
             { name: "BCA", tag: "Top ROI", desc: "Bachelor of Computer Applications", icon: GraduationCap, link: "BCA" },
-            { name: "BCA AI & ML", tag: "Emerging", desc: "BCA with Artificial Intelligence", icon: Sparkles, link: "BCA AI & ML" },
-            { name: "BCA Data Science", tag: "Analytics", desc: "Big Data & Business Intelligence", icon: FileText, link: "BCA Data Science" },
+            { name: "BCA AI & ML", tag: "Emerging", desc: "BCA with Applied Machine Learning", icon: Sparkles, link: "BCA AI & ML" },
+            { name: "BCA Data Science", tag: "Analytics", desc: "Big Data & Business Intelligence", icon: BookOpen, link: "BCA Data Science" },
             { name: "MCA", tag: "Postgrad", desc: "Master of Computer Applications", icon: Briefcase, link: "MCA" },
             { name: "MBA", tag: "Leadership", desc: "Master of Business Administration", icon: Award, link: "MBA" },
             { name: "B.Com (Hons)", tag: "Commerce Top", desc: "Finance, Tax & Capital Markets", icon: ShieldCheck, link: "B.Com (Hons)" },
@@ -242,13 +307,13 @@ export const HomePage = () => {
               <Link
                 key={item.name}
                 to={`/colleges?course=${encodeURIComponent(item.link)}`}
-                className="bg-white p-4 rounded-xl border border-slate-200/90 shadow-card hover:border-blue-500 hover:shadow-soft-xl hover:-translate-y-1 transition group"
+                className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-card hover:border-blue-500 hover:shadow-soft-xl hover:-translate-y-1 transition duration-200 group"
               >
                 <div className="flex items-center justify-between mb-3">
-                  <div className="w-9 h-9 rounded-lg bg-blue-50 group-hover:bg-blue-600 text-blue-600 group-hover:text-white flex items-center justify-center transition">
+                  <div className="w-10 h-10 rounded-xl bg-blue-50 group-hover:bg-blue-600 text-blue-600 group-hover:text-white flex items-center justify-center transition">
                     <Icon className="w-5 h-5" />
                   </div>
-                  <span className="text-[10px] font-bold bg-slate-100 text-slate-700 group-hover:bg-blue-100 group-hover:text-blue-800 px-2 py-0.5 rounded-full transition">
+                  <span className="text-[10px] font-bold bg-slate-100 text-slate-700 group-hover:bg-blue-100 group-hover:text-blue-800 px-2.5 py-0.5 rounded-full transition">
                     {item.tag}
                   </span>
                 </div>
@@ -261,36 +326,6 @@ export const HomePage = () => {
               </Link>
             );
           })}
-        </div>
-      </section>
-
-      {/* ADMISSION PREDICTOR CTA BANNER */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-gradient-to-r from-blue-700 via-indigo-700 to-navy-900 rounded-3xl p-8 sm:p-12 text-white shadow-soft-xl relative overflow-hidden">
-          <div className="max-w-2xl relative z-10 space-y-4">
-            <span className="bg-white/10 text-blue-200 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider backdrop-blur-md">
-              Free Smart Predictor
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
-              Know Which Colleges You Qualify For in 60 Seconds
-            </h2>
-            <p className="text-slate-200 text-sm leading-relaxed">
-              Enter your Class 12 marks, JEE Main percentile, CUET score, category, and budget. Our rule engine will classify matching colleges as <strong className="text-emerald-300">Eligible</strong>, <strong className="text-amber-300">Potential Match</strong>, or <strong className="text-rose-300">Not Eligible</strong> with detailed match reasons.
-            </p>
-            <div className="pt-2 flex flex-wrap items-center gap-3">
-              <Link
-                to="/predictor"
-                className="bg-white hover:bg-slate-100 text-blue-900 font-bold px-6 py-3 rounded-xl text-sm shadow-md transition flex items-center gap-2"
-              >
-                <SlidersHorizontal className="w-4 h-4 text-blue-600" />
-                <span>Launch Admission Predictor</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-              <span className="text-xs text-blue-200">
-                ✓ No registration required for instant test
-              </span>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -339,7 +374,7 @@ export const HomePage = () => {
               How CollegePath Works For You
             </h2>
             <p className="text-sm text-slate-500 mt-2">
-              Transparent, data-backed guidance designed specifically for the Indian admission ecosystem.
+              Transparent, data-backed guidance designed specifically for the Indian higher education system.
             </p>
           </div>
 
@@ -349,18 +384,18 @@ export const HomePage = () => {
                 step: "01",
                 title: "Enter Academic Profile",
                 desc: "Provide your Class 12 percentage, stream (PCM, PCB, Commerce, Arts), and optional entrance scores (JEE/CUET).",
-                icon: FileText
+                icon: BookOpen
               },
               {
                 step: "02",
-                title: "Apply Quotas & Budget",
-                desc: "Specify your home state for domicile quota advantages, category (OBC/SC/ST/EWS), and annual budget.",
+                title: "Set Quotas & Budget",
+                desc: "Specify your home state for domicile quota advantages, reservation category (OBC/SC/ST/EWS), and annual budget.",
                 icon: SlidersHorizontal
               },
               {
                 step: "03",
                 title: "Instant Rule Evaluation",
-                desc: "Our engine checks your eligibility across courses, cutoffs, and budgets, clearly tagging why you qualify.",
+                desc: "Our engine checks your eligibility across courses, cutoffs, and budgets, grouping into Best Match and Safe Choices.",
                 icon: CheckCircle2
               },
               {
@@ -372,7 +407,7 @@ export const HomePage = () => {
             ].map((st) => {
               const Icon = st.icon;
               return (
-                <div key={st.step} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-card relative">
+                <div key={st.step} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-card relative hover:shadow-soft-xl hover:-translate-y-1 transition duration-200">
                   <span className="text-3xl font-extrabold text-blue-100 absolute top-4 right-4">
                     {st.step}
                   </span>
@@ -396,7 +431,7 @@ export const HomePage = () => {
             Frequently Asked Questions
           </h2>
           <p className="text-sm text-slate-500 mt-1">
-            Everything you need to know about college shortlisting and admission rules.
+            Everything you need to know about college shortlisting, category relaxations, and admission rules.
           </p>
         </div>
 

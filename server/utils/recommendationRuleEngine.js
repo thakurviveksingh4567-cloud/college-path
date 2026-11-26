@@ -1,6 +1,6 @@
 /**
  * Rule-based Recommendation & Eligibility Predictor Engine for Indian Colleges
- * Evaluates student Class 12 marks, Stream, JEE Main / CUET scores, Category, Domicile, and Budget.
+ * Evaluates student Class 12 marks, Stream, JEE Main / CUET scores, Category, Domicile, Budget, and College Preference.
  */
 
 export const evaluateCollegeMatch = (college, studentProfile) => {
@@ -13,7 +13,8 @@ export const evaluateCollegeMatch = (college, studentProfile) => {
     annualBudget = 500000,
     needHostel = true,
     preferredLocations = [],
-    entranceExams = {}
+    entranceExams = {},
+    collegePreference = 'All' // 'All', 'Government', 'Private'
   } = studentProfile;
 
   const reasons = [];
@@ -42,18 +43,23 @@ export const evaluateCollegeMatch = (college, studentProfile) => {
 
   const coursesToEvaluate = relevantCourses.length > 0 ? relevantCourses : college.courses;
 
+  const isGov = ['IIT', 'NIT', 'IIIT', 'Central University', 'State Government'].includes(college.collegeType);
+  const isPriv = ['Deemed University', 'Top Private'].includes(college.collegeType);
+
   for (const course of coursesToEvaluate) {
     let courseScore = 40;
     const courseReasons = [];
     const courseWarnings = [];
 
     // 1. Stream Check
-    const streamAllowed = course.streamRequired.includes(stream) || 
-      course.streamRequired.includes('Any') || 
-      course.streamRequired.includes('All');
+    const reqStreams = course.streamRequired || [];
+    const streamAllowed = reqStreams.length === 0 ||
+      reqStreams.includes(stream) || 
+      reqStreams.includes('Any') || 
+      reqStreams.includes('All');
 
     if (!streamAllowed) {
-      courseWarnings.push(`Stream mismatch: ${course.name} requires ${course.streamRequired.join('/')}, but your stream is ${stream}.`);
+      courseWarnings.push(`Stream mismatch: ${course.name} requires ${reqStreams.join('/')}, but your stream is ${stream}.`);
     } else {
       isStreamEligible = true;
       courseReasons.push(`Eligible Stream: Your stream (${stream}) meets the prerequisite for ${course.name}.`);
@@ -71,6 +77,9 @@ export const evaluateCollegeMatch = (college, studentProfile) => {
       isAcademicEligible = true;
       courseReasons.push(`Class 12 Marks: Your score of ${class12Percentage}% exceeds the minimum requirement of ${minPercentage}%.`);
       courseScore += 20;
+      if (class12Percentage >= minPercentage + 8) {
+        courseScore += 5; // Extra cushion for safe choice
+      }
     } else if (class12Percentage >= minPercentage - 3) {
       courseWarnings.push(`Borderline Class 12 score: ${class12Percentage}% is slightly below standard ${minPercentage}%, check university concession norms.`);
       courseScore += 5;
@@ -80,8 +89,17 @@ export const evaluateCollegeMatch = (college, studentProfile) => {
     }
 
     // 3. Entrance Exam Cutoff Check
-    const jeeInfo = entranceExams?.jeeMain;
-    const cuetInfo = entranceExams?.cuet;
+    const jeePercentileVal = entranceExams?.jeeMain?.percentile ?? studentProfile.jeePercentile ?? (typeof entranceExams?.jeeMain === 'number' ? entranceExams.jeeMain : null);
+    const jeeRankVal = entranceExams?.jeeMain?.rank ?? studentProfile.jeeRank;
+    const jeeInfo = (jeePercentileVal !== null && jeePercentileVal !== undefined)
+      ? { taken: true, percentile: Number(jeePercentileVal), rank: jeeRankVal ? Number(jeeRankVal) : undefined }
+      : (entranceExams?.jeeMain || null);
+
+    const cuetScoreVal = entranceExams?.cuet?.score ?? studentProfile.cuetScore ?? (typeof entranceExams?.cuet === 'number' ? entranceExams.cuet : null);
+    const cuetPercentileVal = entranceExams?.cuet?.percentile ?? studentProfile.cuetPercentile;
+    const cuetInfo = (cuetScoreVal !== null && cuetScoreVal !== undefined) || (cuetPercentileVal !== null && cuetPercentileVal !== undefined)
+      ? { taken: true, score: cuetScoreVal ? Number(cuetScoreVal) : undefined, percentile: cuetPercentileVal ? Number(cuetPercentileVal) : undefined }
+      : (entranceExams?.cuet || null);
 
     let examPassed = false;
     let examBorderlineLocal = false;
@@ -147,7 +165,7 @@ export const evaluateCollegeMatch = (college, studentProfile) => {
     if (examPassed) isExamEligible = true;
     if (examBorderlineLocal) isExamBorderline = true;
 
-    // 4. Budget & Hostel Evaluation
+    // 4. Budget & Living Evaluation
     const annualTuition = course.tuitionFeePerYear || 0;
     const annualHostel = needHostel ? (college.hostelFacilities?.feePerYear || 0) : 0;
     const totalAnnualCost = annualTuition + annualHostel;
@@ -157,10 +175,30 @@ export const evaluateCollegeMatch = (college, studentProfile) => {
       courseScore += 10;
     } else {
       const difference = totalAnnualCost - annualBudget;
-      courseWarnings.push(`Budget Alert: Annual cost exceeds budget by ₹${difference.toLocaleString('en-IN')} (Scholarships available).`);
+      courseWarnings.push(`Budget Alert: Annual cost exceeds budget by ₹${difference.toLocaleString('en-IN')} (Institute scholarships available).`);
+      courseScore -= 10;
     }
 
-    // 5. Domicile / Home State Advantage
+    // 5. Government vs Private Preference Evaluation
+    if (collegePreference === 'Government') {
+      if (isGov) {
+        courseReasons.push(`Institution Type: Matches your preference for Government / Public universities.`);
+        courseScore += 10;
+      } else {
+        courseWarnings.push(`Institution Type: Private/Deemed university (you selected Government preference).`);
+        courseScore -= 12;
+      }
+    } else if (collegePreference === 'Private') {
+      if (isPriv) {
+        courseReasons.push(`Institution Type: Matches your preference for Private / Deemed universities.`);
+        courseScore += 10;
+      } else {
+        courseWarnings.push(`Institution Type: Government university (you selected Private preference).`);
+        courseScore -= 12;
+      }
+    }
+
+    // 6. Domicile / Home State Advantage
     if (homeState && college.location?.state?.toLowerCase() === homeState.toLowerCase()) {
       courseReasons.push(`Home State Advantage: 50% reservation quota applies for ${homeState} domicile candidates with relaxed rank cutoffs.`);
       courseScore += 10;
@@ -189,20 +227,29 @@ export const evaluateCollegeMatch = (college, studentProfile) => {
   }
 
   // Determine Overall Match Status
+  // Categories: 'Best Match', 'Safe Choice', 'Potential Match', 'Not Eligible'
   let matchStatus = 'Not Eligible';
   let badgeColor = 'red';
 
   if (isStreamEligible && isAcademicEligible) {
     if (isExamEligible || (!hasRelevantExam && isAcademicEligible)) {
-      matchStatus = 'Eligible';
-      badgeColor = 'green';
+      if (highestScore >= 82) {
+        matchStatus = 'Best Match';
+        badgeColor = 'green';
+      } else if (highestScore >= 70) {
+        matchStatus = 'Safe Choice';
+        badgeColor = 'teal';
+      } else {
+        matchStatus = 'Best Match';
+        badgeColor = 'green';
+      }
     } else if (isExamBorderline) {
       matchStatus = 'Potential Match';
       badgeColor = 'amber';
     } else if (hasRelevantExam && !isExamEligible) {
       matchStatus = 'Potential Match';
       badgeColor = 'amber';
-      reasons.push('Can be considered in subsequent spot rounds, institutional quota, or management seats.');
+      reasons.push('Can be considered in subsequent spot rounds, institutional quota, or sliding seats.');
     }
   } else if (isStreamEligible && !isAcademicEligible) {
     matchStatus = 'Not Eligible';
